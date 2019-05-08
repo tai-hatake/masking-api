@@ -1,0 +1,7 @@
+flask
+flask-cors
+flask-restplus
+flask_httpauth
+uwsgi
+requests
+mecab-python3
