@@ -9,5 +9,5 @@ services:
       - "./log:/var/log"
     tty: true
     environment:
-      TZ: Asia/Tokyo
-    command: flask run --host 0.0.0.0 --port 5000
+      - TZ=Asia/Tokyo
+      - PORT=5000

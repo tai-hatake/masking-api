@@ -27,19 +27,12 @@ RUN git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git \
 
 ARG project_dir=/app/
 ADD requirements.txt $project_dir
-ADD index.py $project_dir
+ADD app.py $project_dir
 
 WORKDIR $project_dir
 
 RUN pip3 install --upgrade pip
 RUN pip install -r requirements.txt
 
-# ENV PYTHONIOENCODING=UTF-8 \
-#     LANG=ja_JP.UTF-8 \
-#     MECAB_CHARSET=utf8 \
-#     TZ=JST-9 \
-#     PYTHONPATH=${PYTHONPATH}:$project_dir
-
-# ENV FLASK_APP index.py
-# CMD flask run -h 0.0.0.0 -p $PORT
-# CMD ["python", "index.py"]
+ENV FLASK_APP /app/app.py
+CMD flask run -h 0.0.0.0 -p $PORT
