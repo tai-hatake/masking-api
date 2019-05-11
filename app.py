@@ -1,6 +1,17 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import json
 app = Flask(__name__)
+
+CORS(
+    app,
+    origins=["*"],
+    # origins=['http://localhost:3000','http://35.200.34.122:3000/'],
+    methods=["GET", "PUT", "POST", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Origin", "X-Requested-With", "Content-Type"],
+    supports_credentials=True,
+)
+
 
 @app.route("/", methods=['GET'])
 def hello():
@@ -23,11 +34,11 @@ def masking():
     mp = Morph()
     mp.set_sentence(data['text'])
     mp.get_parsed_text()
-    mp.extract_proper_noun()
+    proper_noun = mp.extract_proper_noun()
     text = mp.masking()
     result = {
-        "Content-Type": "application/json",
-        "Answer": {"Text": text}
+        'text': text,
+        'proper': proper_noun
     }
     return jsonify(result)
 
@@ -63,6 +74,7 @@ class Morph(object):
                         self.results.append((word, kind_of_proper_noun))
         result_uniq = list(set(self.results))
         self.result_dict = dict(result_uniq)
+        return self.result_dict
 
 
     def get_parsed_text(self):
@@ -71,13 +83,13 @@ class Morph(object):
         self.parsed = self.normal.parse(self.text).splitlines()[:-1]
 
     def masking(self):
-        words = ''
         wakati_txt = self.wakati.parse(self.text).split(' ')
+        words = self.text
         for word in wakati_txt:
             kind_touple = self.result_dict.get(word)
             if kind_touple is not None:
-                word = word = '{}'.format('***')
-            words += word
+                words = words.replace(word, '{}'.format('*' * len(word)))
         return words
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=5000,debug=True)
